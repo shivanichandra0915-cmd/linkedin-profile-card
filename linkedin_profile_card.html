@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LinkedIn Profile Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2ee;
+    --surface: #ffffff;
+    --ink: #1a1a18;
+    --muted: #7a7870;
+    --accent: #0A66C2;
+    --accent-light: #e8f0fa;
+    --border: rgba(0,0,0,0.1);
+    --radius: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--ink);
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+  }
+
+  .field {
+    margin-bottom: 1.2rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: #bbb;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  /* --- CARD OUTPUT --- */
+  #card-output {
+    display: none;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    background: var(--ink);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+  }
+
+  .card-top::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  }
+
+  .avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .card-role {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .card-body {
+    padding: 1.5rem 2rem;
+  }
+
+  .card-bio {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    font-weight: 300;
+  }
+
+  .card-description {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1.4rem;
+    font-style: italic;
+  }
+
+  .li-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 8px;
+    transition: opacity 0.2s;
+  }
+
+  .li-btn:hover { opacity: 0.88; }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-secondary {
+    flex: 1;
+    padding: 9px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-secondary:hover { background: #eae7e3; }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <div class="header">
+    <h1>LinkedIn Profile Card</h1>
+    <p>Fill in your details to generate a card with your LinkedIn link and a description to share.</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card" id="form-section">
+    <div class="field">
+      <label>Full name *</label>
+      <input id="inp-name" type="text" placeholder="e.g. Riya Sharma" />
+    </div>
+    <div class="field">
+      <label>Job title / role</label>
+      <input id="inp-role" type="text" placeholder="e.g. Product Designer at Acme" />
+    </div>
+    <div class="field">
+      <label>Short bio</label>
+      <textarea id="inp-bio" rows="2" placeholder="e.g. I build user-friendly products at the intersection of design and code."></textarea>
+    </div>
+    <div class="field">
+      <label>Description (shown on your card)</label>
+      <textarea id="inp-desc" rows="3" placeholder="e.g. Open to freelance projects in UI/UX design. I specialise in B2B SaaS products and design systems. Let's connect!"></textarea>
+    </div>
+    <div class="field">
+      <label>LinkedIn profile URL *</label>
+      <input id="inp-url" type="url" placeholder="https://linkedin.com/in/yourname" />
+    </div>
+    <button class="btn-primary" onclick="generateCard()">Generate profile card</button>
+  </div>
+
+  <!-- CARD OUTPUT -->
+  <div id="card-output">
+    <div class="card-top">
+      <div class="avatar-row">
+        <div class="avatar" id="out-avatar"></div>
+        <div>
+          <div class="card-name" id="out-name"></div>
+          <div class="card-role" id="out-role"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="card-bio" id="out-bio"></p>
+      <p class="card-description" id="out-desc"></p>
+      <a class="li-btn" id="out-link" href="#" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452H17.02v-5.569c0-1.327-.024-3.037-1.852-3.037-1.853 0-2.136 1.446-2.136 2.94v5.666H9.607V9h3.281v1.561h.046c.457-.866 1.573-1.779 3.236-1.779 3.459 0 4.098 2.276 4.098 5.237v6.433zM5.337 7.433a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8zm1.643 13.019H3.694V9h3.286v11.452zM22.225 0H1.771C.79 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        View LinkedIn profile
+      </a>
+      <div class="card-actions">
+        <button class="btn-secondary" onclick="editCard()">Edit details</button>
+        <button class="btn-secondary" id="btn-copy" onclick="copyURL()">Copy LinkedIn URL</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function getInitials(name) {
+    return name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  function generateCard() {
+    const name = document.getElementById('inp-name').value.trim();
+    const role = document.getElementById('inp-role').value.trim();
+    const bio  = document.getElementById('inp-bio').value.trim();
+    const desc = document.getElementById('inp-desc').value.trim();
+    const url  = document.getElementById('inp-url').value.trim();
+
+    if (!name || !url) {
+      alert('Please fill in your name and LinkedIn URL.');
+      return;
+    }
+
+    document.getElementById('out-avatar').textContent = getInitials(name);
+    document.getElementById('out-name').textContent   = name;
+    document.getElementById('out-role').textContent   = role;
+    document.getElementById('out-bio').textContent    = bio;
+    document.getElementById('out-link').href          = url;
+
+    const descEl = document.getElementById('out-desc');
+    if (desc) {
+      descEl.textContent = desc;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    document.getElementById('form-section').style.display  = 'none';
+    const card = document.getElementById('card-output');
+    card.style.display = 'block';
+  }
+
+  function editCard() {
+    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('card-output').style.display  = 'none';
+  }
+
+  function copyURL() {
+    const url = document.getElementById('out-link').href;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy LinkedIn URL', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
